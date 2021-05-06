@@ -4,6 +4,55 @@
 <title>NTT Data - Test</title>
 <link rel="icon" href="favicon.ico" type="image/x-icon" />
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<script src='https://code.jquery.com/jquery-1.11.2.min.js'></script>
+<script>
+    // Implicit grant credentials
+    const CLIENT_ID = 'a585d998-568a-4fb6-bfc5-33c8df8ce7c6';
+
+    // Genesys Cloud environment
+    const ENVIRONMENT = 'mypurecloud.ie';
+    
+    function getUrlVars() {
+		var vars = {};
+		var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+			vars[key] = value;
+		});
+		return vars;
+	}
+	
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\#&]" + name + "=([^&#]*)"),
+          results = regex.exec(location.hash);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    if(window.location.hash) {
+        console.log(location.hash);
+        var token = getParameterByName('access_token');
+
+        $.ajax({
+            url: `https://api.${ENVIRONMENT}/api/v2/users/me`,
+            type: "GET",
+            beforeSend: function(xhr){xhr.setRequestHeader('Authorization', 'bearer ' + token);},
+            success: function(data) {
+                console.log(data);
+            }
+        });
+
+        location.hash=''
+		
+
+    } else {
+        var queryStringData = {
+            response_type : "token",
+            client_id : CLIENT_ID,
+            redirect_uri : "https://teo-contact-center.github.io/test-public/index.html?authenticated=true"
+        }
+
+        window.location.replace(`https://login.${ENVIRONMENT}/oauth/authorize?` + jQuery.param(queryStringData));
+    }
+</script>
 </head>
 <body style="margin-top: 8px;
 	margin-right: 5px;
@@ -41,18 +90,18 @@
 	bgcolor="#FFFFFF">
 	<tr>
 		<td>
-		<table cellspacing="0" cellpadding="0" border="0" align="center">
+		<table class="container" cellspacing="0" cellpadding="0" border="0" align="center">
 			<tr>
 				<td align="center">
-				<table width="950px">
-					<tr>
-						<td align="center"><IMG SRC="images/link.gif" WIDTH="5" HEIGHT="5"
-							BORDER="0" hspace=5><a href="release_notes.txt"
-							class="testoNormale" target="ReleaseNotes">Release
-						notes</a></td>
-					</tr>
-				</table>
-			</td>
+					<table width="950px">
+						<tr>
+							<td align="center"><IMG SRC="images/link.gif" WIDTH="5" HEIGHT="5"
+								BORDER="0" hspace=5><a href="release_notes.txt"
+								class="testoNormale" target="ReleaseNotes">Release
+							notes</a></td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
 		</td>
@@ -79,5 +128,13 @@
 		</td>
 	</tr>
 </table>
+<script>
+		var params = getUrlVars();
+		for (const [key, value] of Object.entries(params)) {
+			$( ".container" ).append( "<tr><td align=\"center\"><table width=\"950px\"><tr><td align=\"center\">"+`${key}: ${value}`+"</td></tr></table></td></tr>" )
+			console.log(`${key}: ${value}`);
+		}
+
+</script>
 </body>
 </html>
